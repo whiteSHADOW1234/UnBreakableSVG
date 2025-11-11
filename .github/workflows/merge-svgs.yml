@@ -5,7 +5,9 @@ on:
     paths:
       - 'mergesvg-layout.json'
       - 'scripts/**'
-      - '.github/workflows/merge-and-schedule.yml'
+      - '.github/workflows/merge-svgs.yml'
+    paths-ignore:
+      - 'out/**'            # avoid loops from our own commits
   schedule:
     - cron: '0 */6 * * *'   # every 6 hours (UTC)
   workflow_dispatch: {}
@@ -80,7 +82,8 @@ jobs:
 
       - name: Commit and push generated SVG (only for schedule or manual)
         id: git-commit
-        if: ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
+        # Also commit on push, but avoid loops and bot re-triggers
+        if: ${{ (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || github.event_name == 'push') && github.actor != 'github-actions[bot]' }}
         run: |
           set -eux
           git add "${{ env.OUT_DIR }}"/*.svg || true
@@ -98,3 +101,4 @@ jobs:
         with:
           name: merged-svg
           path: ${{ env.OUT_FILE }}
+          if-no-files-found: warn
