@@ -1,9 +1,5 @@
 name: Merge SVGs (push + scheduled)
 
-# Triggers:
-#  - when mergesvg-layout.json or scripts change (push)
-#  - every 6 hours (UTC)
-#  - manual (workflow_dispatch)
 on:
   push:
     paths:
@@ -11,8 +7,8 @@ on:
       - 'scripts/**'
       - '.github/workflows/merge-and-schedule.yml'
   schedule:
-    - cron: '0 */6 * * *'   # every 6 hours at minute 0 (UTC)
-  workflow_dispatch: {}    # allow manual runs
+    - cron: '0 */6 * * *'   # every 6 hours (UTC)
+  workflow_dispatch: {}
 
 permissions:
   contents: write
@@ -41,18 +37,40 @@ jobs:
         with:
           node-version: '18'
 
+      - name: Ensure output directory and show repo state
+        run: |
+          set -eux
+          mkdir -p "${{ env.OUT_DIR }}"
+          echo "Workspace files:"
+          ls -la
+          echo "Check layout file exists:"
+          if [ -f "${{ env.LAYOUT_FILE }}" ]; then
+            echo "FOUND ${LAYOUT_FILE} - head:"
+            head -n 50 "${{ env.LAYOUT_FILE }}" || true
+          else
+            echo "ERROR: layout file '${{ env.LAYOUT_FILE }}' not found in repo root."
+            exit 2
+          fi
+
       - name: Install dependencies (no-op if none)
         run: npm ci || true
 
-      - name: Ensure output dir
-        run: mkdir -p "${{ env.OUT_DIR }}"
-
-      - name: Run SVG merge script
+      - name: Run SVG merge script (capture exit code)
+        id: merge
         run: |
-          node scripts/merge-layout.js --layout "${{ env.LAYOUT_FILE }}" --out "${{ env.OUT_FILE }}"
+          set -eux
+          node scripts/merge-layout.js --layout "${{ env.LAYOUT_FILE }}" --out "${{ env.OUT_FILE }}" || { echo "merge-script failed with exit $?" ; exit 3; }
 
-      - name: Show generated file (first 60 lines) for logs
-        run: head -n 60 "${{ env.OUT_FILE }}" || true
+      - name: Show generated artifact files
+        run: |
+          echo "Listing out/ after generation:"
+          ls -la "${{ env.OUT_DIR }}" || true
+          echo "If out/merged.svg exists, show first 80 lines:"
+          if [ -f "${{ env.OUT_FILE }}" ]; then
+            head -n 80 "${{ env.OUT_FILE }}" || true
+          else
+            echo "No merged svg generated"
+          fi
 
       - name: Configure git user
         if: ${{ always() }}
@@ -60,36 +78,22 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-      # Commit & push step: only when triggered by schedule or manual dispatch.
-      # We avoid committing on push-triggered runs to reduce push loops. If you want push-runs to push too, remove/change the condition.
       - name: Commit and push generated SVG (only for schedule or manual)
         id: git-commit
         if: ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' }}
         run: |
           set -eux
-
-          # Stage generated files (adjust pattern if script outputs other files)
           git add "${{ env.OUT_DIR }}"/*.svg || true
-
-          # If no staged changes, exit gracefully
           if git diff --cached --quiet; then
             echo "No changes to commit"
             echo "changed=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
-
-          # Commit and push; include [skip ci] to avoid triggering other workflows if desired
           git commit -m "chore: automated update of merged SVGs [skip ci]" || true
-
-          # Push to the current branch (GITHUB_TOKEN has write access because of permissions)
-          # Use origin HEAD to push to default branch
           git push origin HEAD
-
-          # Indicate a change happened
           echo "changed=true" >> "$GITHUB_OUTPUT"
 
-      - name: Upload merged-svg artifact (if changed)
-        if: steps.git-commit.outputs.changed == 'true'
+      - name: Upload merged-svg artifact (always upload so you can inspect)
         uses: actions/upload-artifact@v4
         with:
           name: merged-svg
