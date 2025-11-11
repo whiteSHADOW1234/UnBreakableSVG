@@ -2,10 +2,7 @@ name: Merge SVGs (push + scheduled)
 
 on:
   push:
-    paths:
-      - 'mergesvg-layout.json'
-      - 'scripts/**'
-      - '.github/workflows/merge-svgs.yml'
+    # Trigger on any push; we'll ignore generated files below
     paths-ignore:
       - 'out/**'            # avoid loops from our own commits
   schedule:
