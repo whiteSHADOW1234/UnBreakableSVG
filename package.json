@@ -1,0 +1,15 @@
+{
+  "name": "mergesvg-action",
+  "version": "1.0.0",
+  "description": "Merge SVGs from a layout JSON into a single canvas SVG (for GitHub Actions/workflow)",
+  "main": "scripts/merge-layout.js",
+  "scripts": {
+    "merge": "node scripts/merge-layout.js --layout mergesvg-layout.json --out out/merged.svg"
+  },
+  "author": "",
+  "license": "MIT",
+  "engines": {
+    "node": ">=16"
+  },
+  "dependencies": {}
+}
