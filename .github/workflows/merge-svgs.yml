@@ -79,11 +79,12 @@ jobs:
 
       - name: Commit and push generated SVG (only for schedule or manual)
         id: git-commit
-        # Also commit on push, but avoid loops and bot re-triggers
-        if: ${{ (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || github.event_name == 'push') && github.actor != 'github-actions[bot]' }}
+        # Commit on push/schedule/manual. Loop prevention handled by paths-ignore: out/**
+        if: ${{ github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || github.event_name == 'push' }}
         run: |
           set -eux
-          git add "${{ env.OUT_DIR }}"/*.svg || true
+          # Force-add ignored files (out/ is in .gitignore)
+          git add -f "${{ env.OUT_DIR }}"/*.svg || true
           if git diff --cached --quiet; then
             echo "No changes to commit"
             echo "changed=false" >> "$GITHUB_OUTPUT"
