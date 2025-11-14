@@ -81,3 +81,6 @@ Ideas for improvement include but not limited to:
 - adding per-element backgrounds or borders,
 - adding remote SVG fetch support,
 - or exporting multiple merged canvases at once.
+
+## License
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
