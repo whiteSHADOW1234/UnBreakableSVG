@@ -92,9 +92,7 @@ jobs:
           fi
           git commit -m "chore: automated update of merged SVGs [skip ci]" || true
 
-          # --- Option A: push current HEAD into the workflow branch (works from detached HEAD) ---
-          BRANCH=${GITHUB_REF#refs/heads/}
-          git push origin "HEAD:refs/heads/$BRANCH"
+          git push origin HEAD
 
           echo "changed=true" >> "$GITHUB_OUTPUT"
 
