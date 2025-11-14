@@ -2,9 +2,6 @@
 
 ![Banner](UnBreakableSVG.jpeg)
 
-**UnBreakable** is a plug-and-play GitHub Action that reliably merges multiple SVGs into a single, polished canvas using a tiny JSON layout.
-It’s perfect for README banners, dashboards, badge boards, or any place you want composed SVGs that never “break” after edits.
-
 ## Sample Usage
 ![UnbreakableSVG](out/merged.svg)
 
@@ -12,12 +9,12 @@ It’s perfect for README banners, dashboards, badge boards, or any place you wa
 After spending hours perfecting an SVG layout, nothing’s more frustrating than seeing a broken image in your README or on your site. **UnBreakableSVG** solves that problem by turning your SVG files into a reliable, automated asset. It composes, scales, and refreshes your SVGs from a single JSON layout and can auto-commit updates on a schedule.
 
 ## Features
-- **Smart Layout Control** — Define where and how each SVG appears using a lightweight JSON layout.
-- **Accurate Scaling** — Each element scales automatically based on its target width/height.
-- **Custom Backgrounds** — Support for solid or transparent backgrounds with rounded corners.
-- **Auto Updates** — A built-in scheduler regenerates and pushes fresh merged SVGs every 6 hours.
-- **Fully CI/CD Ready** — Works out of the box with GitHub Actions using Node.js 18+.
-- **Composable** — Each element can come from a local file, base64-encoded string, or even remote SVG.
+- **Smart Layout Control:** Define where and how each SVG appears using a lightweight JSON layout.
+- **Accurate Scaling:** Each element scales automatically based on its target width/height.
+- **Custom Backgrounds:** Support for solid or transparent backgrounds with rounded corners.
+- **Auto Updates:** A built-in scheduler regenerates and pushes fresh merged SVGs every 6 hours.
+- **Fully CI/CD Ready:** Works out of the box with GitHub Actions using Node.js 18+.
+- **Composable:** Each element can come from a local file, base64-encoded string, or even remote SVG.
 
 
 ## How to use
@@ -47,40 +44,50 @@ node scripts/merge-layout.js --layout mergesvg-layout.json --out out/merged.svg
 ```
 
 
-## JSON Example
-Create `mergesvg-layout.json` with a `canvas` and an `elements` array:
+## JSON Schema
+Define `mergesvg-layout.json` with the following structure (placeholders in braces):
 ```
 {
   "canvas": {
-    "width": 800,
-    "height": 400,
-    "backgroundColor": "#ffffff",
-    "transparency": 1
+    "width": {CANVAS_WIDTH_PX},
+    "height": {CANVAS_HEIGHT_PX},
+    "backgroundColor": "{CSS_COLOR}",
+    "transparency": {ALPHA_0_TO_1},
+    "pattern": "{PATTERN_OR_none}",
+    "gridSize": {GRID_SIZE_PX},
+    "gridColor": "{GRID_COLOR}"
   },
   "elements": [
     {
-      "content": "<svg>...</svg>",
-      "position": { "x": 20, "y": 40 },
-      "dimensions": { "width": 200, "height": 100 }
-    },
-    {
-      "content": "PHN2ZyB3aWR0aD0nMTI4JyBoZWlnaHQ9JzMyJz4KPC9zdmc+", 
-      "position": { "x": 260, "y": 40 },
-      "dimensions": { "width": 128, "height": 32 }
+      "name": "{OPTIONAL_LABEL}",
+      "remoteUrl": "{HTTP_URL_OPTIONAL}",
+      "content": "{SVG_RAW_CODE_BASE64_ENCODED}",
+      "position": { "x": {X_PX}, "y": {Y_PX} },
+      "dimensions": { "width": {WIDTH_PX}, "height": {HEIGHT_PX} }
     }
-  ]
+  ],
+  "version": "{OPTIONAL_VERSION}",
+  "exportedAt": "{OPTIONAL_ISO_DATETIME}"
 }
-
 ```
+
+#### Field notes
+- Source fields: provide at least one of `remoteUrl`/`remoteURL` or `content`.
+- Resolution order: `remoteUrl` → cached `out/remotes/<sha1(remoteUrl)>.svg` → `content`.
+- Coordinates and sizes (`x`, `y`, `width`, `height`) are pixels.
+- `remoteUrl` or `remoteURL`are all supported.
+
+> [!NOTE]
+> ### How to fill placeholders
+> - Replace the braces with your actual values; do not keep the `{...}`.
+> - Keep quotes only for string values; do not quote numbers or booleans.
+>   - Example: `"width": 848` (number), `"backgroundColor": "#ffffff"` (string), `"transparency": 0.5` (number).
+
 After the workflow runs, you’ll get an auto-generated file at: `out/merged.svg`, which looks exactly like your defined layout and will be refreshed automatically on schedule.
 
 
 ## Contributing
 Pull requests and Issues are welcome!
-Ideas for improvement include but not limited to:
-- adding per-element backgrounds or borders,
-- adding remote SVG fetch support,
-- or exporting multiple merged canvases at once.
 
 ## License
 This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
