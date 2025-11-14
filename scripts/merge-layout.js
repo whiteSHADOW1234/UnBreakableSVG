@@ -2,9 +2,10 @@
 /**
  * scripts/merge-layout.js
  *
- * This version preserves animations by embedding each element as a nested <svg>
- * positioned with x/y and scaled via width/height only (no CSS transform/scale()).
- * It keeps the original viewBox/preserveAspectRatio and the inner content intact.
+ * Preserves animations by:
+ * - Embedding each element as a nested <svg> positioned via x/y and scaled using width/height (no CSS transform()).
+ * - Keeping original viewBox/preserveAspectRatio and inner content.
+ * - Removing animation-killing CSS (animation-duration: 0s, animation-delay: 0s, shorthand with 0s).
  *
  * Usage:
  *   node scripts/merge-layout.js --layout mergesvg-layout.json --out out/merged.svg
@@ -55,6 +56,28 @@ function stripXmlProlog(s) {
   return s.replace(/^\s*<\?xml[\s\S]*?\?>\s*/i, '').trim();
 }
 
+// Remove CSS that disables animations (duration/delay set to 0s or shorthand with 0s)
+function sanitizeAnimationOverrides(svg) {
+  if (!svg) return svg;
+  let out = svg;
+
+  // Remove universal blocks that zero animations: * { animation-duration: 0s ...; animation-delay: 0s ...; }
+  const universalAnimBlock = /\*\s*\{[^}]*\b(animation-duration\s*:\s*0s[^;]*;|animation-delay\s*:\s*0s[^;]*;)[^}]*\}/gim;
+  out = out.replace(universalAnimBlock, '');
+
+  // Remove explicit 0s properties anywhere inside style tags
+  const durationZero = /animation-duration\s*:\s*0s[^;]*;?/gim;
+  const delayZero = /animation-delay\s*:\s*0s[^;]*;?/gim;
+  out = out.replace(durationZero, '');
+  out = out.replace(delayZero, '');
+
+  // Remove animation shorthand that includes 0s duration: animation: name 0s ...
+  const shorthandZero = /animation\s*:\s*([^;}]*)\b0s\b([^;}]*)[;]?/gim;
+  out = out.replace(shorthandZero, '');
+
+  return out;
+}
+
 // Extract opening <svg ...> attributes and inner content
 function extractSvgParts(svgText) {
   const cleaned = stripXmlProlog(svgText);
@@ -86,25 +109,16 @@ function parseNumeric(val) {
 
 function getViewBoxString(attrs, fallbackW, fallbackH) {
   if (attrs.viewBox) {
-    // Preserve original, including non-zero origin
-    return String(attrs.viewBox).trim();
+    return String(attrs.viewBox).trim(); // Preserve origin
   }
-  // Derive from width/height if present
   const w = parseNumeric(attrs.width);
   const h = parseNumeric(attrs.height);
-  if (w && h) {
-    return `0 0 ${w} ${h}`;
-  }
-  // Final fallback to target dims
-  if (fallbackW && fallbackH) {
-    return `0 0 ${fallbackW} ${fallbackH}`;
-  }
-  // Absolute fallback
+  if (w && h) return `0 0 ${w} ${h}`;
+  if (fallbackW && fallbackH) return `0 0 ${fallbackW} ${fallbackH}`;
   return '0 0 100 100';
 }
 
 function extractInnerSvgAttributes(svgText) {
-  // Retained for width/height fallback if needed
   const res = { width: null, height: null, viewBox: null };
   const vbMatch = svgText.match(/viewBox\s*=\s*(['"])(.*?)\1/i);
   if (vbMatch) {
@@ -142,16 +156,12 @@ async function main() {
   const canvasW = Math.round(canvas.width || 800);
   const canvasH = Math.round(canvas.height || 200);
 
-  // compute background fill: if transparency provided -> use rgba(...)
+  // compute background fill
   let bgFill = canvas.backgroundColor || '#ffffff';
   if (typeof canvas.transparency === 'number') {
     const rgb = hexToRgb(bgFill);
     const alpha = Number(canvas.transparency);
-    if (rgb) {
-      bgFill = `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, ${alpha})`;
-    } else {
-      bgFill = `rgba(255,255,255,${alpha})`;
-    }
+    bgFill = rgb ? `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, ${alpha})` : `rgba(255,255,255,${alpha})`;
   }
 
   const header = `<?xml version="1.0" encoding="utf-8"?>
@@ -166,7 +176,11 @@ async function main() {
     try {
       const raw = el.content || '';
       const decoded = tryBase64Decode(raw);
-      const svgText = stripXmlProlog(decoded);
+
+      // IMPORTANT: sanitize animation overrides from generators (duration/delay 0s)
+      const sanitized = sanitizeAnimationOverrides(decoded);
+
+      const svgText = stripXmlProlog(sanitized);
 
       // Extract parts and attributes from original root <svg>
       const { inner, attrs } = extractSvgParts(svgText);
@@ -192,8 +206,7 @@ async function main() {
       const x = Number(pos.x || 0);
       const y = Number(pos.y || 0);
 
-      // Build nested <svg> per element: position via x/y, scale via width/height only
-      // Keep original inner content exactly (styles, defs, keyframes, etc.)
+      // Build nested <svg> per element
       const elementFragment = `  <svg x="${x}" y="${y}" width="${finalW}" height="${finalH}" viewBox="${viewBoxStr}"${par}>
 ${inner}
   </svg>
