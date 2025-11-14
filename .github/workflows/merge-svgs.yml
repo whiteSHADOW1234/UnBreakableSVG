@@ -1,4 +1,4 @@
-name: Merge SVGs (push + scheduled)
+name: UnBreakableSVG
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
     paths-ignore:
       - 'out/**'            # avoid loops from our own commits
   schedule:
-    - cron: '0 * * * *'   # every hour (UTC)
+    - cron: '0 */6 * * *'   # every 6 hours (UTC)
   workflow_dispatch: {}
 
 permissions:
