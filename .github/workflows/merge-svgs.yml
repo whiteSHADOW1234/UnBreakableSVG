@@ -6,14 +6,14 @@ on:
     paths-ignore:
       - 'out/**'            # avoid loops from our own commits
   schedule:
-    - cron: '0 */6 * * *'   # every 6 hours (UTC)
+    - cron: '0 * * * *'   # every hour (UTC)
   workflow_dispatch: {}
 
 permissions:
   contents: write
 
 concurrency:
-  group: merge-svgs
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -91,7 +91,11 @@ jobs:
             exit 0
           fi
           git commit -m "chore: automated update of merged SVGs [skip ci]" || true
-          git push origin HEAD
+
+          # --- Option A: push current HEAD into the workflow branch (works from detached HEAD) ---
+          BRANCH=${GITHUB_REF#refs/heads/}
+          git push origin "HEAD:refs/heads/$BRANCH"
+
           echo "changed=true" >> "$GITHUB_OUTPUT"
 
       - name: Upload merged-svg artifact (always upload so you can inspect)
