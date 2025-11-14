@@ -23,6 +23,7 @@ jobs:
       OUT_DIR: out
       LAYOUT_FILE: mergesvg-layout.json
       OUT_FILE: out/merged.svg
+      REMOTE_DIR: out/remotes
 
     steps:
       - name: Checkout repository (with write token)
@@ -40,6 +41,7 @@ jobs:
         run: |
           set -eux
           mkdir -p "${{ env.OUT_DIR }}"
+          mkdir -p "${{ env.REMOTE_DIR }}"
           echo "Workspace files:"
           ls -la
           echo "Check layout file exists:"
@@ -53,6 +55,11 @@ jobs:
 
       - name: Install dependencies (no-op if none)
         run: npm ci || true
+
+      - name: Fetch remote SVG sources (http(s)/data URIs)
+        run: |
+          set -eux
+          node scripts/fetch-remotes.js --layout "${{ env.LAYOUT_FILE }}" --outdir "${{ env.REMOTE_DIR }}" || { echo "fetch-remotes failed"; exit 3; }
 
       - name: Run SVG merge script (capture exit code)
         id: merge
@@ -84,7 +91,7 @@ jobs:
         run: |
           set -eux
           # Force-add ignored files (out/ is in .gitignore)
-          git add -f "${{ env.OUT_DIR }}"/*.svg || true
+          git add -f "${{ env.OUT_DIR }}"/*.svg "${{ env.OUT_DIR }}"/**/*.svg || true
           if git diff --cached --quiet; then
             echo "No changes to commit"
             echo "changed=false" >> "$GITHUB_OUTPUT"

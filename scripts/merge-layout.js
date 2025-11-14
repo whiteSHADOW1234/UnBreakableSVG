@@ -13,6 +13,7 @@
 
 const fs = require('fs').promises;
 const path = require('path');
+const crypto = require('crypto');
 
 function usageAndExit(msg) {
   if (msg) console.error(msg);
@@ -76,6 +77,82 @@ function sanitizeAnimationOverrides(svg) {
   out = out.replace(shorthandZero, '');
 
   return out;
+}
+
+function sha1Hex(s) {
+  return crypto.createHash('sha1').update(String(s)).digest('hex');
+}
+
+function decodeDataUri(uri) {
+  const m = /^data:([^,]*?),(.*)$/i.exec(uri || '');
+  if (!m) return null;
+  const meta = m[1] || '';
+  const data = m[2] || '';
+  const isBase64 = /;base64/i.test(meta);
+  try {
+    return isBase64 ? Buffer.from(data, 'base64').toString('utf8') : decodeURIComponent(data);
+  } catch (_) {
+    return null;
+  }
+}
+
+async function fetchTextWithTimeout(url, ms = 10000) {
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), ms);
+  try {
+    const res = await fetch(url, { signal: controller.signal, redirect: 'follow' });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return await res.text();
+  } finally {
+    clearTimeout(id);
+  }
+}
+
+async function tryReadFileMaybe(p) {
+  try {
+    return await fs.readFile(p, 'utf8');
+  } catch (_) {
+    return null;
+  }
+}
+
+async function resolveSvgSource(el, repoRoot) {
+  // 1) Try remote URL (http(s) or data URI)
+  const remote = el && el.remoteUrl;
+  if (remote && typeof remote === 'string' && remote.trim()) {
+    try {
+      if (/^data:/i.test(remote)) {
+        const txt = decodeDataUri(remote);
+        if (txt && txt.includes('<svg')) return txt;
+      } else if (/^https?:\/\//i.test(remote)) {
+        const txt = await fetchTextWithTimeout(remote, 12000);
+        if (txt && txt.includes('<svg')) return txt;
+      }
+    } catch (_) {
+      // swallow, continue to fallbacks
+    }
+  }
+
+  // 2) Try explicit local path in repo
+  const localPath = (el && (el.file || el.localPath)) ? String(el.file || el.localPath) : null;
+  if (localPath) {
+    const abs = path.resolve(repoRoot, localPath);
+    const txt = await tryReadFileMaybe(abs);
+    if (txt && txt.includes('<svg')) return txt;
+  }
+
+  // 3) Try deterministic stash created by fetch-remotes step
+  if (remote && typeof remote === 'string') {
+    const fname = sha1Hex(remote) + '.svg';
+    const stash = path.resolve(repoRoot, 'out', 'remotes', fname);
+    const txt = await tryReadFileMaybe(stash);
+    if (txt && txt.includes('<svg')) return txt;
+  }
+
+  // 4) Fallback to inline content
+  const raw = el && el.content ? String(el.content) : '';
+  const decoded = tryBase64Decode(raw);
+  return decoded;
 }
 
 // Extract opening <svg ...> attributes and inner content
@@ -174,11 +251,12 @@ async function main() {
 
   for (const el of elements) {
     try {
-      const raw = el.content || '';
-      const decoded = tryBase64Decode(raw);
+      const repoRoot = process.cwd();
+      const resolved = await resolveSvgSource(el, repoRoot);
+      if (!resolved) throw new Error('No SVG source available for element');
 
       // IMPORTANT: sanitize animation overrides from generators (duration/delay 0s)
-      const sanitized = sanitizeAnimationOverrides(decoded);
+      const sanitized = sanitizeAnimationOverrides(resolved);
 
       const svgText = stripXmlProlog(sanitized);
 
