@@ -118,7 +118,7 @@ async function tryReadFileMaybe(p) {
 
 async function resolveSvgSource(el, repoRoot) {
   // 1) Try remote URL (http(s) or data URI)
-  const remote = el && el.remoteUrl;
+  const remote = el && (el.remoteURL || el.remoteUrl);
   if (remote && typeof remote === 'string' && remote.trim()) {
     try {
       if (/^data:/i.test(remote)) {

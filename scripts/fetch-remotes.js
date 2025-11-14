@@ -84,8 +84,8 @@ async function main() {
   await ensureDir(outdir);
 
   let fetched = 0;
-  for (const el of elements) {
-    const url = el && el.remoteUrl;
+    for (const el of elements) {
+      const url = el && (el.remoteURL || el.remoteUrl);
     if (!url || typeof url !== 'string' || !url.trim()) continue;
 
     try {
