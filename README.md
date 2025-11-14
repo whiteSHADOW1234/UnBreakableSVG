@@ -1,41 +1,33 @@
 # UnBreakableSVG
 
+![Banner](UnBreakableSVG.jpeg)
+
 **UnBreakable** is a plug-and-play GitHub Action that reliably merges multiple SVGs into a single, polished canvas using a tiny JSON layout.
 It’s perfect for README banners, dashboards, badge boards, or any place you want composed SVGs that never “break” after edits.
+
+## Sample Usage
+![UnbreakableSVG](out/merged.svg)
 
 ## Why UnBreakableSVG?
 After spending hours perfecting an SVG layout, nothing’s more frustrating than seeing a broken image in your README or on your site. **UnBreakableSVG** solves that problem by turning your SVG files into a reliable, automated asset. It composes, scales, and refreshes your SVGs from a single JSON layout and can auto-commit updates on a schedule.
 
 ## Features
 - **Smart Layout Control** — Define where and how each SVG appears using a lightweight JSON layout.
-
 - **Accurate Scaling** — Each element scales automatically based on its target width/height.
-
 - **Custom Backgrounds** — Support for solid or transparent backgrounds with rounded corners.
-
 - **Auto Updates** — A built-in scheduler regenerates and pushes fresh merged SVGs every 6 hours.
-
 - **Fully CI/CD Ready** — Works out of the box with GitHub Actions using Node.js 18+.
-
 - **Composable** — Each element can come from a local file, base64-encoded string, or even remote SVG.
 
 
-## Usage
-1. **Clone or add the workflow**
-Drop this repo’s .github/workflows/merge-and-schedule.yml into your own project.
+## How to use
+1. Add this repo’s [`.github/workflows/merge-svgs.yml`](.github/workflows/merge-svgs.yml) to your project.
+2. Edit `mergesvg-layout.json` (or use [MergeSVG](https://github.com/whiteSHADOW1234/MergeSVG)
+) to specify which SVGs to merge and their sizes/positions.
+3. Commit and push changes to trigger the Action to regenerate the merged SVG.
+4. A scheduled workflow refreshes the merged SVG every six hours automatically.
+5. Embed or reference the output (e.g. `![UnBreakable SVG](out/merged.svg)`) in your README or website.
 
-2. **Define your layout:**
-Edit `mergesvg-layout.json` to match your desired SVGs, sizes, and positions.
-
-3. **Commit and push:**
-Every time you push the layout or script changes, the Action regenerates the merged file.
-
-4. **Sit back**
-A scheduled workflow runs every 6 hours to refresh your merged SVG automatically — no manual updates needed.
-
-
-5. **Use it anywhere:**
-Reference your merged SVG directly in your README or website. E.g., `![UnBreakable SVG](out/merged.svg)`
 
 > [!NOTE] 
 > **Scheduled Auto-Commit**
@@ -82,11 +74,10 @@ Create `mergesvg-layout.json` with a `canvas` and an `elements` array:
 ```
 After the workflow runs, you’ll get an auto-generated file at: `out/merged.svg`, which looks exactly like your defined layout and will be refreshed automatically on schedule.
 
+
 ## Contributing
 Pull requests and Issues are welcome!
 Ideas for improvement include but not limited to:
 - adding per-element backgrounds or borders,
 - adding remote SVG fetch support,
 - or exporting multiple merged canvases at once.
-
-## LI
