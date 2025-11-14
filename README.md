@@ -89,4 +89,5 @@ Ideas for improvement include but not limited to:
 - adding remote SVG fetch support,
 - or exporting multiple merged canvases at once.
 
-## LI
+## License
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
