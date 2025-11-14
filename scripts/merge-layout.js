@@ -2,8 +2,9 @@
 /**
  * scripts/merge-layout.js
  *
- * This updated version preserves each element's inner <svg> as-is and wraps it in a group
- * that applies translate(x,y) and scale(s,s) where s = element.dimensions.width / innerSvgWidth.
+ * This version preserves animations by embedding each element as a nested <svg>
+ * positioned with x/y and scaled via width/height only (no CSS transform/scale()).
+ * It keeps the original viewBox/preserveAspectRatio and the inner content intact.
  *
  * Usage:
  *   node scripts/merge-layout.js --layout mergesvg-layout.json --out out/merged.svg
@@ -36,20 +37,17 @@ async function readLayout(p) {
 
 function tryBase64Decode(s) {
   if (!s) return '';
-  // Try base64 -> if result contains '<svg' return it
   try {
     const buf = Buffer.from(s, 'base64');
     const decoded = buf.toString('utf8');
     if (decoded.includes('<svg')) return decoded;
   } catch (e) {}
-  // sometimes URL-safe base64
   try {
     const safe = s.replace(/-/g, '+').replace(/_/g, '/');
     const buf2 = Buffer.from(safe, 'base64');
     const d2 = buf2.toString('utf8');
     if (d2.includes('<svg')) return d2;
   } catch (e) {}
-  // fallback assume plain svg text
   return s;
 }
 
@@ -57,11 +55,57 @@ function stripXmlProlog(s) {
   return s.replace(/^\s*<\?xml[\s\S]*?\?>\s*/i, '').trim();
 }
 
-function extractInnerSvgAttributes(svgText) {
-  // Return object with width, height, viewBoxParts (array [x,y,w,h]), and rawWidth/height strings
-  const res = { width: null, height: null, viewBox: null };
+// Extract opening <svg ...> attributes and inner content
+function extractSvgParts(svgText) {
+  const cleaned = stripXmlProlog(svgText);
+  const openMatch = cleaned.match(/<svg([^>]*)>/i);
+  if (!openMatch) {
+    throw new Error('No <svg> root element found');
+  }
+  const openTagAttrs = openMatch[1] || '';
+  const innerStart = openMatch.index + openMatch[0].length;
+  const closeMatch = cleaned.match(/<\/svg>\s*$/i);
+  const innerEnd = closeMatch ? closeMatch.index : cleaned.length;
+  const inner = cleaned.slice(innerStart, innerEnd);
 
-  // viewBox
+  // parse attributes into object
+  const attrs = {};
+  const attrRegex = /(\b[a-zA-Z_:][-a-zA-Z0-9_:.]*)\s*=\s*(['"])(.*?)\2/g;
+  let m;
+  while ((m = attrRegex.exec(openTagAttrs))) {
+    attrs[m[1]] = m[3];
+  }
+  return { inner, attrs };
+}
+
+function parseNumeric(val) {
+  if (val == null) return null;
+  const n = Number(String(val).replace(/[a-zA-Z%]+$/, ''));
+  return Number.isFinite(n) ? n : null;
+}
+
+function getViewBoxString(attrs, fallbackW, fallbackH) {
+  if (attrs.viewBox) {
+    // Preserve original, including non-zero origin
+    return String(attrs.viewBox).trim();
+  }
+  // Derive from width/height if present
+  const w = parseNumeric(attrs.width);
+  const h = parseNumeric(attrs.height);
+  if (w && h) {
+    return `0 0 ${w} ${h}`;
+  }
+  // Final fallback to target dims
+  if (fallbackW && fallbackH) {
+    return `0 0 ${fallbackW} ${fallbackH}`;
+  }
+  // Absolute fallback
+  return '0 0 100 100';
+}
+
+function extractInnerSvgAttributes(svgText) {
+  // Retained for width/height fallback if needed
+  const res = { width: null, height: null, viewBox: null };
   const vbMatch = svgText.match(/viewBox\s*=\s*(['"])(.*?)\1/i);
   if (vbMatch) {
     const parts = vbMatch[2].trim().split(/[\s,]+/).map(Number);
@@ -72,16 +116,10 @@ function extractInnerSvgAttributes(svgText) {
       return res;
     }
   }
-
-  // width/height attributes
   const wMatch = svgText.match(/<svg[^>]*\bwidth\s*=\s*(['"])?([0-9.]+)([a-z%]*)\1?/i);
   const hMatch = svgText.match(/<svg[^>]*\bheight\s*=\s*(['"])?([0-9.]+)([a-z%]*)\1?/i);
-  if (wMatch) {
-    res.width = Number(wMatch[2]);
-  }
-  if (hMatch) {
-    res.height = Number(hMatch[2]);
-  }
+  if (wMatch) res.width = Number(wMatch[2]);
+  if (hMatch) res.height = Number(hMatch[2]);
   return res;
 }
 
@@ -112,12 +150,10 @@ async function main() {
     if (rgb) {
       bgFill = `rgba(${rgb[0]}, ${rgb[1]}, ${rgb[2]}, ${alpha})`;
     } else {
-      // fallback if backgroundColor not hex
       bgFill = `rgba(255,255,255,${alpha})`;
     }
   }
 
-  // header
   const header = `<?xml version="1.0" encoding="utf-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="${canvasW}" height="${canvasH}" viewBox="0 0 ${canvasW} ${canvasH}">
 <rect width="${canvasW}" height="${canvasH}" fill="${bgFill}"/>
@@ -132,36 +168,35 @@ async function main() {
       const decoded = tryBase64Decode(raw);
       const svgText = stripXmlProlog(decoded);
 
-      // get inner SVG numeric width from viewBox or width attribute
-      const attrs = extractInnerSvgAttributes(svgText);
-      const innerW = (attrs.width && Number(attrs.width)) || null;
-      const innerH = (attrs.height && Number(attrs.height)) || null;
+      // Extract parts and attributes from original root <svg>
+      const { inner, attrs } = extractSvgParts(svgText);
 
-      // element target dimension (use width from layout.element.dimensions if present)
+      // Target dimensions from layout
       const dims = el.dimensions || {};
       const targetW = typeof dims.width === 'number' ? dims.width : null;
       const targetH = typeof dims.height === 'number' ? dims.height : null;
 
-      // compute scale: prefer width ratio if both available; otherwise fallback to 1
-      let scale = 1;
-      if (innerW && targetW) {
-        scale = targetW / innerW;
-      } else if (innerH && targetH) {
-        scale = targetH / innerH;
-      } else if (innerW && targetH) {
-        scale = targetH / innerW; // fallback
-      }
+      // Fallback sizes if target dims missing
+      const fallback = extractInnerSvgAttributes(svgText);
+      const finalW = targetW || fallback.width || 100;
+      const finalH = targetH || fallback.height || 100;
 
-      // position
+      // Compute viewBox to preserve original coordinate system
+      const viewBoxStr = getViewBoxString(attrs, finalW, finalH);
+
+      // Preserve preserveAspectRatio if present
+      const par = attrs.preserveAspectRatio ? ` preserveAspectRatio="${attrs.preserveAspectRatio}"` : '';
+
+      // Position
       const pos = el.position || {};
       const x = Number(pos.x || 0);
       const y = Number(pos.y || 0);
 
-      // Build wrapper group: translate(x,y) scale(scale,scale)
-      // Keep the decoded svg unchanged inside (so it preserves its viewBox, title, styles, defs).
-      const elementFragment = `  <g transform="translate(${x},${y}) scale(${scale},${scale})">
-${svgText.split('\n').map(line => '    ' + line).join('\n')}
-  </g>
+      // Build nested <svg> per element: position via x/y, scale via width/height only
+      // Keep original inner content exactly (styles, defs, keyframes, etc.)
+      const elementFragment = `  <svg x="${x}" y="${y}" width="${finalW}" height="${finalH}" viewBox="${viewBoxStr}"${par}>
+${inner}
+  </svg>
 `;
 
       pieces.push(elementFragment);
@@ -170,7 +205,8 @@ ${svgText.split('\n').map(line => '    ' + line).join('\n')}
     }
   }
 
-  const footer = `</svg>\n`;
+  const footer = `</svg>
+`;
   const merged = header + pieces.join('\n') + footer;
 
   const outPath = path.resolve(opts.out);
