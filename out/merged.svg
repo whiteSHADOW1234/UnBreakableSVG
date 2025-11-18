@@ -150,7 +150,7 @@ Created by potrace 1.15, written by Peter Selinger 2001-2017
   
           <text x="50%" y="18" text-anchor="middle" font-family="Segoe UI,Helvetica,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji" font-weight="bold" font-size="13" fill="#e5c07b">Stars</text>
           <text x="50%" y="85" text-anchor="middle" font-family="Segoe UI,Helvetica,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji" font-weight="bold" font-size="10.5" fill="#e06c75">Stargazer</text>
-          <text x="50%" y="97" text-anchor="middle" font-family="Segoe UI,Helvetica,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji" font-weight="bold" font-size="10" fill="#e06c75">382pt</text>
+          <text x="50%" y="97" text-anchor="middle" font-family="Segoe UI,Helvetica,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji" font-weight="bold" font-size="10" fill="#e06c75">383pt</text>
           
     <style>
     @keyframes StarsRankAnimation {
@@ -158,7 +158,7 @@ Created by potrace 1.15, written by Peter Selinger 2001-2017
         width: 0px;
       }
       to {
-        width: 29.119999999999997px;
+        width: 29.28px;
       }
     }
     #Stars-rank-progress{
@@ -871,7 +871,7 @@ Created by potrace 1.15, written by Peter Selinger 2001-2017
   <svg x="41.5" y="42.5" width="379" height="149.3030303030303" viewBox="0 0 495 195">
 
         <title id="titleId">whiteSHADOW1234's GitHub Stats, Rank: A+</title>
-        <desc id="descId">Total Stars Earned: 382, Total Commits in 2025 : 382, Total PRs: 18, Total Issues: 6, Contributed to (last year): 4</desc>
+        <desc id="descId">Total Stars Earned: 383, Total Commits in 2025 : 383, Total PRs: 18, Total Issues: 6, Contributed to (last year): 4</desc>
         <style>
           .header {
             font: 600 18px 'Segoe UI', Ubuntu, Sans-Serif;
@@ -929,7 +929,7 @@ Created by potrace 1.15, written by Peter Selinger 2001-2017
         stroke-dashoffset: 251.32741228718345;
       }
       to {
-        stroke-dashoffset: 121.0782680582255;
+        stroke-dashoffset: 121.07501610005453;
       }
     }
   
@@ -1022,7 +1022,7 @@ Created by potrace 1.15, written by Peter Selinger 2001-2017
         x="219.01"
         y="12.5"
         data-testid="stars"
-      >382</text>
+      >383</text>
     </g>
   </g><g transform="translate(0, 25)">
     <g class="stagger" style="animation-delay: 600ms" transform="translate(25, 0)">
@@ -1155,7 +1155,7 @@ Created by potrace 1.15, written by Peter Selinger 2001-2017
                 <!-- Current Streak range -->
                 <g transform='translate(247.5, 145)'>
                     <text x='0' y='21' stroke-width='0' text-anchor='middle' fill='#38BDAE' stroke='none' font-family='"Segoe UI", Ubuntu, sans-serif' font-weight='400' font-size='12px' font-style='normal' style='opacity: 0; animation: fadein 0.5s linear forwards 0.9s'>
-                        Nov 17
+                        Nov 18
                     </text>
                 </g>
 
