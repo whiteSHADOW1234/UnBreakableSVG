@@ -871,7 +871,7 @@ Created by potrace 1.15, written by Peter Selinger 2001-2017
   <svg x="41.5" y="42.5" width="379" height="149.3030303030303" viewBox="0 0 495 195">
 
         <title id="titleId">whiteSHADOW1234's GitHub Stats, Rank: A+</title>
-        <desc id="descId">Total Stars Earned: 386, Total Commits in 2025 : 386, Total PRs: 18, Total Issues: 6, Contributed to (last year): 4</desc>
+        <desc id="descId">Total Stars Earned: 387, Total Commits in 2025 : 387, Total PRs: 18, Total Issues: 6, Contributed to (last year): 4</desc>
         <style>
           .header {
             font: 600 18px 'Segoe UI', Ubuntu, Sans-Serif;
@@ -929,7 +929,7 @@ Created by potrace 1.15, written by Peter Selinger 2001-2017
         stroke-dashoffset: 251.32741228718345;
       }
       to {
-        stroke-dashoffset: 121.07523289711523;
+        stroke-dashoffset: 121.07002977359797;
       }
     }
   
@@ -1022,7 +1022,7 @@ Created by potrace 1.15, written by Peter Selinger 2001-2017
         x="219.01"
         y="12.5"
         data-testid="stars"
-      >386</text>
+      >387</text>
     </g>
   </g><g transform="translate(0, 25)">
     <g class="stagger" style="animation-delay: 600ms" transform="translate(25, 0)">
@@ -1126,7 +1126,7 @@ Created by potrace 1.15, written by Peter Selinger 2001-2017
                 <!-- Total Contributions big number -->
                 <g transform='translate(82.5, 48)'>
                     <text x='0' y='32' stroke-width='0' text-anchor='middle' fill='#70A5FD' stroke='none' font-family='"Segoe UI", Ubuntu, sans-serif' font-weight='700' font-size='28px' font-style='normal' style='opacity: 0; animation: fadein 0.5s linear forwards 0.6s'>
-                        1,504
+                        1,499
                     </text>
                 </g>
 
