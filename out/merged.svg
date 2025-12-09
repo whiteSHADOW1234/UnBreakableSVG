@@ -880,7 +880,7 @@ Created by potrace 1.15, written by Peter Selinger 2001-2017
   <svg x="41.5" y="42.5" width="379" height="149.3030303030303" viewBox="0 0 495 195">
 
         <title id="titleId">whiteSHADOW1234's GitHub Stats, Rank: A+</title>
-        <desc id="descId">Total Stars Earned: 433, Total Commits in 2025 : 433, Total PRs: 18, Total Issues: 7, Contributed to (last year): 4</desc>
+        <desc id="descId">Total Stars Earned: 434, Total Commits in 2025 : 434, Total PRs: 18, Total Issues: 7, Contributed to (last year): 4</desc>
         <style>
           .header {
             font: 600 18px 'Segoe UI', Ubuntu, Sans-Serif;
@@ -938,7 +938,7 @@ Created by potrace 1.15, written by Peter Selinger 2001-2017
         stroke-dashoffset: 251.32741228718345;
       }
       to {
-        stroke-dashoffset: 121.24997823843566;
+        stroke-dashoffset: 121.24672602945122;
       }
     }
   
@@ -1031,7 +1031,7 @@ Created by potrace 1.15, written by Peter Selinger 2001-2017
         x="219.01"
         y="12.5"
         data-testid="stars"
-      >433</text>
+      >434</text>
     </g>
   </g><g transform="translate(0, 25)">
     <g class="stagger" style="animation-delay: 600ms" transform="translate(25, 0)">
@@ -1135,7 +1135,7 @@ Created by potrace 1.15, written by Peter Selinger 2001-2017
                 <!-- Total Contributions big number -->
                 <g transform='translate(82.5, 48)'>
                     <text x='0' y='32' stroke-width='0' text-anchor='middle' fill='#70A5FD' stroke='none' font-family='"Segoe UI", Ubuntu, sans-serif' font-weight='700' font-size='28px' font-style='normal' style='opacity: 0; animation: fadein 0.5s linear forwards 0.6s'>
-                        671
+                        1,502
                     </text>
                 </g>
 
@@ -1149,7 +1149,7 @@ Created by potrace 1.15, written by Peter Selinger 2001-2017
                 <!-- Total Contributions range -->
                 <g transform='translate(82.5, 114)'>
                     <text x='0' y='32' stroke-width='0' text-anchor='middle' fill='#38BDAE' stroke='none' font-family='"Segoe UI", Ubuntu, sans-serif' font-weight='400' font-size='12px' font-style='normal' style='opacity: 0; animation: fadein 0.5s linear forwards 0.8s'>
-                        Jan 1 - Present
+                        Sep 22, 2021 - Present
                     </text>
                 </g>
             </g>
@@ -1190,7 +1190,7 @@ Created by potrace 1.15, written by Peter Selinger 2001-2017
                 <!-- Longest Streak big number -->
                 <g transform='translate(412.5, 48)'>
                     <text x='0' y='32' stroke-width='0' text-anchor='middle' fill='#70A5FD' stroke='none' font-family='"Segoe UI", Ubuntu, sans-serif' font-weight='700' font-size='28px' font-style='normal' style='opacity: 0; animation: fadein 0.5s linear forwards 1.2s'>
-                        12
+                        50
                     </text>
                 </g>
 
@@ -1204,7 +1204,7 @@ Created by potrace 1.15, written by Peter Selinger 2001-2017
                 <!-- Longest Streak range -->
                 <g transform='translate(412.5, 114)'>
                     <text x='0' y='32' stroke-width='0' text-anchor='middle' fill='#38BDAE' stroke='none' font-family='"Segoe UI", Ubuntu, sans-serif' font-weight='400' font-size='12px' font-style='normal' style='opacity: 0; animation: fadein 0.5s linear forwards 1.4s'>
-                        Jan 31 - Feb 11
+                        Feb 21, 2023 - Apr 11, 2023
                     </text>
                 </g>
             </g>
