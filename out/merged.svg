@@ -1135,7 +1135,7 @@ Created by potrace 1.15, written by Peter Selinger 2001-2017
                 <!-- Total Contributions big number -->
                 <g transform='translate(82.5, 48)'>
                     <text x='0' y='32' stroke-width='0' text-anchor='middle' fill='#70A5FD' stroke='none' font-family='"Segoe UI", Ubuntu, sans-serif' font-weight='700' font-size='28px' font-style='normal' style='opacity: 0; animation: fadein 0.5s linear forwards 0.6s'>
-                        1,502
+                        671
                     </text>
                 </g>
 
@@ -1149,7 +1149,7 @@ Created by potrace 1.15, written by Peter Selinger 2001-2017
                 <!-- Total Contributions range -->
                 <g transform='translate(82.5, 114)'>
                     <text x='0' y='32' stroke-width='0' text-anchor='middle' fill='#38BDAE' stroke='none' font-family='"Segoe UI", Ubuntu, sans-serif' font-weight='400' font-size='12px' font-style='normal' style='opacity: 0; animation: fadein 0.5s linear forwards 0.8s'>
-                        Sep 22, 2021 - Present
+                        Jan 1 - Present
                     </text>
                 </g>
             </g>
@@ -1190,7 +1190,7 @@ Created by potrace 1.15, written by Peter Selinger 2001-2017
                 <!-- Longest Streak big number -->
                 <g transform='translate(412.5, 48)'>
                     <text x='0' y='32' stroke-width='0' text-anchor='middle' fill='#70A5FD' stroke='none' font-family='"Segoe UI", Ubuntu, sans-serif' font-weight='700' font-size='28px' font-style='normal' style='opacity: 0; animation: fadein 0.5s linear forwards 1.2s'>
-                        50
+                        12
                     </text>
                 </g>
 
@@ -1204,7 +1204,7 @@ Created by potrace 1.15, written by Peter Selinger 2001-2017
                 <!-- Longest Streak range -->
                 <g transform='translate(412.5, 114)'>
                     <text x='0' y='32' stroke-width='0' text-anchor='middle' fill='#38BDAE' stroke='none' font-family='"Segoe UI", Ubuntu, sans-serif' font-weight='400' font-size='12px' font-style='normal' style='opacity: 0; animation: fadein 0.5s linear forwards 1.4s'>
-                        Feb 21, 2023 - Apr 11, 2023
+                        Jan 31 - Feb 11
                     </text>
                 </g>
             </g>
