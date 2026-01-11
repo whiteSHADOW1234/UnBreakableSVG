@@ -880,7 +880,7 @@ Created by potrace 1.15, written by Peter Selinger 2001-2017
   <svg x="41.5" y="42.5" width="379" height="149.3030303030303" viewBox="0 0 495 195">
 
         <title id="titleId">whiteSHADOW1234's GitHub Stats, Rank: A+</title>
-        <desc id="descId">Total Stars Earned: 443, Total Commits in 2026 : 443, Total PRs: 18, Total Issues: 7, Contributed to (last year): 4</desc>
+        <desc id="descId">Total Stars Earned: 441, Total Commits in 2026 : 441, Total PRs: 18, Total Issues: 7, Contributed to (last year): 4</desc>
         <style>
           .header {
             font: 600 18px 'Segoe UI', Ubuntu, Sans-Serif;
@@ -938,7 +938,7 @@ Created by potrace 1.15, written by Peter Selinger 2001-2017
         stroke-dashoffset: 251.32741228718345;
       }
       to {
-        stroke-dashoffset: 122.52907319364573;
+        stroke-dashoffset: 122.64295745226556;
       }
     }
   
@@ -1031,7 +1031,7 @@ Created by potrace 1.15, written by Peter Selinger 2001-2017
         x="219.01"
         y="12.5"
         data-testid="stars"
-      >443</text>
+      >441</text>
     </g>
   </g><g transform="translate(0, 25)">
     <g class="stagger" style="animation-delay: 600ms" transform="translate(25, 0)">
@@ -1046,7 +1046,7 @@ Created by potrace 1.15, written by Peter Selinger 2001-2017
         x="219.01"
         y="12.5"
         data-testid="commits"
-      >505</text>
+      >490</text>
     </g>
   </g><g transform="translate(0, 50)">
     <g class="stagger" style="animation-delay: 750ms" transform="translate(25, 0)">
