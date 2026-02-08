@@ -938,7 +938,7 @@ Created by potrace 1.15, written by Peter Selinger 2001-2017
         stroke-dashoffset: 251.32741228718345;
       }
       to {
-        stroke-dashoffset: 122.88115072029115;
+        stroke-dashoffset: 122.99569744358179;
       }
     }
   
@@ -1046,7 +1046,7 @@ Created by potrace 1.15, written by Peter Selinger 2001-2017
         x="219.01"
         y="12.5"
         data-testid="commits"
-      >454</text>
+      >438</text>
     </g>
   </g><g transform="translate(0, 50)">
     <g class="stagger" style="animation-delay: 750ms" transform="translate(25, 0)">
